@@ -41,6 +41,37 @@ from jartbrowser.services.privacy import (
     DataLocation,
     get_privacy_service,
 )
+from jartbrowser.services.multi_tab import (
+    MultiTabCoordinationService,
+    CrossTabMessage,
+    CoordinationEvent,
+    get_coordination_service,
+)
+from jartbrowser.services.tab_search import (
+    TabSearchService,
+    TabIndex,
+    SearchResult,
+    get_tab_search_service,
+)
+from jartbrowser.services.dom_scanner import (
+    DOMScannerService,
+    PageStructure,
+    ElementInfo,
+    ElementType,
+    get_dom_scanner_service,
+)
+from jartbrowser.services.session_persistence import (
+    SessionPersistenceService,
+    SessionData,
+    get_session_service,
+)
+from jartbrowser.services.audit_log import (
+    AuditLogService,
+    AuditLogEntry,
+    AuditAction,
+    AuditLevel,
+    get_audit_service,
+)
 
 __all__ = [
     # Database
@@ -86,4 +117,30 @@ __all__ = [
     "PrivacyMode",
     "DataLocation",
     "get_privacy_service",
+    # Multi-Tab Coordination
+    "MultiTabCoordinationService",
+    "CrossTabMessage",
+    "CoordinationEvent",
+    "get_coordination_service",
+    # Tab Search
+    "TabSearchService",
+    "TabIndex",
+    "SearchResult",
+    "get_tab_search_service",
+    # DOM Scanner
+    "DOMScannerService",
+    "PageStructure",
+    "ElementInfo",
+    "ElementType",
+    "get_dom_scanner_service",
+    # Session Persistence
+    "SessionPersistenceService",
+    "SessionData",
+    "get_session_service",
+    # Audit Log
+    "AuditLogService",
+    "AuditLogEntry",
+    "AuditAction",
+    "AuditLevel",
+    "get_audit_service",
 ]
