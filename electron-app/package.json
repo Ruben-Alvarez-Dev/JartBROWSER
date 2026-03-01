@@ -1,0 +1,23 @@
+{
+  "name": "@jartbrowser/electron-app",
+  "version": "1.0.0",
+  "description": "JartBROWSER Electron main process",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite --config vite.config.ts",
+    "build": "vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "electron": "^28.0.0",
+    "dockerode": "^4.0.0",
+    "safe-storage": "^4.2.0",
+    "electron-updater": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "vite": "^5.0.0",
+    "vite-plugin-electron": "^0.28.0",
+    "electron-builder": "^24.9.0"
+  }
+}
