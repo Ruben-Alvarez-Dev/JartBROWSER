@@ -227,8 +227,84 @@ function ElementsPanel() {
   );
 }
 
+function WorkflowsPanel() {
+  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
+  const [executing, setExecuting] = useState(false);
+
+  useEffect(() => {
+    fetchWorkflows();
+  }, []);
+
+  const fetchWorkflows = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/workflows');
+      const data = await res.json();
+      setWorkflows(data || []);
+    } catch (error) {
+      console.error('Failed to fetch workflows:', error);
+    }
+    setLoading(false);
+  };
+
+  const executeWorkflow = async (workflowId: string) => {
+    setExecuting(true);
+    try {
+      const res = await fetch(`http://localhost:8000/api/v1/workflows/${workflowId}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await res.json();
+      alert(`Workflow executed! Status: ${data.status}`);
+    } catch (error) {
+      alert('Failed to execute workflow');
+    }
+    setExecuting(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="workflows-panel">
+        <div className="loading"><span className="spinner" /> Loading workflows...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="workflows-panel">
+      <div className="workflows-header">
+        <h3>Workflows</h3>
+        <button className="refresh-btn" onClick={fetchWorkflows}>🔄</button>
+      </div>
+      {workflows.length === 0 ? (
+        <div className="empty-state">No workflows found. Create one in the backend.</div>
+      ) : (
+        <div className="workflows-list">
+          {workflows.map((wf: any) => (
+            <div key={wf.id} className="workflow-item">
+              <div className="workflow-info">
+                <span className="workflow-name">{wf.name}</span>
+                <span className="workflow-desc">{wf.description || 'No description'}</span>
+              </div>
+              <button 
+                className="run-btn"
+                onClick={() => executeWorkflow(wf.id)}
+                disabled={executing}
+              >
+                ▶️ Run
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'page' | 'elements'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'page' | 'elements' | 'workflows'>('chat');
 
   return (
     <div className="sidebar-app">
@@ -252,11 +328,18 @@ function App() {
         >
           Elements
         </button>
+        <button
+          className={activeTab === 'workflows' ? 'active' : ''}
+          onClick={() => setActiveTab('workflows')}
+        >
+          Workflows
+        </button>
       </nav>
       <main className="content">
         {activeTab === 'chat' && <ChatPanel />}
         {activeTab === 'page' && <PageInfoPanel />}
         {activeTab === 'elements' && <ElementsPanel />}
+        {activeTab === 'workflows' && <WorkflowsPanel />}
       </main>
     </div>
   );
