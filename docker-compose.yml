@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # JartBROWSER Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        VERSION: ${VERSION:-1.0.0}
+        VCS_REF: ${VCS_REF:-dev}
+    image: jartbrowser/backend:${VERSION:-latest}
+    container_name: jartbrowser-backend
+    ports:
+      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:3001:3001"
+    volumes:
+      # SQLite database persistence
+      - backend-data:/app/data
+      # Logs persistence
+      - backend-logs:/app/logs
+      # Alembic migrations (read-only)
+      - ./backend/alembic:/app/alembic:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DATABASE_URL=sqlite:///data/jartbrowser.db
+      - REDIS_URL=redis://redis:6379/0
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - jartbrowser-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Redis - Caching and Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: jartbrowser-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD:-jartbrowser-redis-pass-change-me}
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - jartbrowser-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # Optional: Adminer - Database Management UI
+  adminer:
+    image: adminer:latest
+    container_name: jartbrowser-adminer
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=backend
+      - ADMINER_DESIGN=pepa-linha
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - jartbrowser-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 64M
+    profiles:
+      - tools
+
+volumes:
+  # Backend data (SQLite database)
+  backend-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/backend
+
+  # Backend logs
+  backend-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./logs/backend
+
+  # Redis data persistence
+  redis-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/redis
+
+networks:
+  jartbrowser-net:
+    driver: bridge
+    name: jartbrowser-net

@@ -303,8 +303,96 @@ function WorkflowsPanel() {
   );
 }
 
+function VisionPanel() {
+  const [captures, setCaptures] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<any>(null);
+
+  const takeScreenshot = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/vision/capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ capture_type: 'screenshot' })
+      });
+      const data = await res.json();
+      setCaptures(prev => [data, ...prev]);
+    } catch (error) {
+      console.error('Screenshot failed:', error);
+    }
+    setLoading(false);
+  };
+
+  const analyzeImage = async (captureId: string) => {
+    setAnalyzing(true);
+    setSelectedCapture(captureId);
+    try {
+      const res = await fetch('http://localhost:8000/api/v1/vision/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_id: captureId })
+      });
+      const data = await res.json();
+      setAnalysis(data);
+    } catch (error) {
+      console.error('Analysis failed:', error);
+    }
+    setAnalyzing(false);
+  };
+
+  return (
+    <div className="vision-panel">
+      <div className="vision-header">
+        <h3>Vision</h3>
+        <button className="capture-btn" onClick={takeScreenshot} disabled={loading}>
+          {loading ? '📸...' : '📸 Screenshot'}
+        </button>
+      </div>
+      
+      {captures.length === 0 ? (
+        <div className="empty-state">
+          Take a screenshot to analyze the page
+        </div>
+      ) : (
+        <div className="captures-grid">
+          {captures.map((cap: any) => (
+            <div key={cap.id} className="capture-item">
+              <div className="capture-preview">
+                {cap.image_data ? (
+                  <img src={`data:image/png;base64,${cap.image_data}`} alt="Screenshot" />
+                ) : (
+                  <div className="no-preview">No preview</div>
+                )}
+              </div>
+              <div className="capture-actions">
+                <button onClick={() => analyzeImage(cap.id)}>🔍 Analyze</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {analyzing && (
+        <div className="analysis-loading">
+          <span className="spinner" /> Analyzing...
+        </div>
+      )}
+
+      {analysis && !analyzing && (
+        <div className="analysis-result">
+          <h4>Analysis</h4>
+          <pre>{JSON.stringify(analysis, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'page' | 'elements' | 'workflows'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'page' | 'elements' | 'workflows' | 'vision'>('chat');
 
   return (
     <div className="sidebar-app">
@@ -334,12 +422,19 @@ function App() {
         >
           Workflows
         </button>
+        <button
+          className={activeTab === 'vision' ? 'active' : ''}
+          onClick={() => setActiveTab('vision')}
+        >
+          Vision
+        </button>
       </nav>
       <main className="content">
         {activeTab === 'chat' && <ChatPanel />}
         {activeTab === 'page' && <PageInfoPanel />}
         {activeTab === 'elements' && <ElementsPanel />}
         {activeTab === 'workflows' && <WorkflowsPanel />}
+        {activeTab === 'vision' && <VisionPanel />}
       </main>
     </div>
   );

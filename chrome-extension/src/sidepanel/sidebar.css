@@ -415,3 +415,45 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Vision Panel */
+.vision-panel {
+  padding: 16px;
+}
+
+.vision-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.vision-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.capture-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.capture-btn:hover {
+  background: var(--accent-hover);
+}
+
+.captures-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
