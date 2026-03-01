@@ -1,0 +1,142 @@
+# Token Optimization Configuration
+
+## DOM Distillation Rules
+
+```json
+{{
+  "rules": [
+    {
+      "name": "strip_non_interactive",
+      "description": "Remove non-interactive elements",
+      "selectors": [
+        "script, style, link[href*='.css'], noscript",
+        "meta, head, [hidden]",
+        "div:not([onclick]):not([onchange]):not([onsubmit])",
+        "span:not([onclick])"
+      ]
+    }},
+    {
+      "name": "compact_attributes",
+      "description": "Keep only essential attributes",
+      "keep_attributes": [
+        "id", "class", "aria-label", "aria-role", "role",
+        "name", "type", "placeholder", "value"
+      ],
+      "remove_attributes": [
+        "data-*", "style", "onclick", "onchange", "data-*"
+      ]
+    }},
+    {
+      "name": "text_content_optimization",
+      "description": "Optimize text representation",
+      "rules": [
+        "Truncate text to 100 chars",
+        "Remove leading/trailing whitespace",
+        "Normalize whitespace"
+      ]
+    }}
+  ]
+}}
+```
+
+## Element Representation
+
+```json
+{{
+  "format": "compact",
+  "template": "[{id}] {tag}: {text}",
+  "max_elements": 100,
+  "priority": "clickables > inputs > text"
+}}
+```
+
+## Page Content Optimization
+
+```json
+{{
+  "sections": [
+    {{
+      "name": "main_content",
+      "selector": "main, article, .content",
+      "max_elements": 30
+    }},
+    {{
+      "name": "navigation",
+      "selector": "nav, .nav, .navigation",
+      "max_elements": 20
+    }},
+    {{
+      "name": "forms",
+      "selector": "form, .form",
+      "max_elements": 15
+    }}
+  ]
+}}
+```
+
+## Context Compression
+
+```json
+{{
+  "strategy": "selective_inclusion",
+  "rules": [
+    {
+      "condition": "simple_navigation",
+      "include": ["buttons", "links", "inputs"],
+      "exclude": ["scripts", "styles", "iframes"]
+    }},
+    {
+      "condition": "complex_task",
+      "include": ["all_interactive", "semantic_structure"],
+      "exclude": ["hidden", "invisible"]
+    }}
+  ]
+}}
+```
+
+## Template Caching
+
+```json
+{{
+  "cache_strategy": "preload_common",
+  "templates": [
+    "simple_navigation",
+    "form_filling",
+    "dropdown_selection",
+    "button_click",
+    "link_follow"
+  ],
+  "cache_ttl_seconds": 3600
+}}
+```
+
+## Performance Metrics
+
+```json
+{{
+  "metrics": {
+    "tokens_per_action": "target: 800, max: 1500",
+    "response_time_ms": "target: 2000, max: 5000",
+    "success_rate": "target: 0.95, min: 0.90",
+    "token_reduction": "target: 0.50, min: 0.40"
+  },
+  "tracking": {
+    "enabled": true,
+    "sample_rate": 1.0,
+    "log_all_actions": true
+  }
+}}
+```
+
+## API Endpoints
+
+- **GET** `/api/v1/prompts/optimization/config` - Get optimization config
+- **PUT** `/api/v1/prompts/optimization/config` - Update optimization config
+- **GET** `/api/v1/prompts/optimization/metrics` - Get optimization metrics
+- **POST** `/api/v1/prompts/optimization/test` - Test optimization strategy
+
+## MCP Tools
+
+- `get_optimization_config` - Get current optimization configuration
+- `update_optimization_config` - Update optimization settings
+- `reset_optimization_metrics` - Reset performance metrics
