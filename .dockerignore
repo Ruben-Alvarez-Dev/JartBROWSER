@@ -1,0 +1,59 @@
+# Docker Ignore
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Documentation
+README.md
+docs/
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+out/
+*.dmg
+*.exe
+*.AppImage
+*.asar
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+
+# Temporary
+tmp/
+temp/
+*.tmp

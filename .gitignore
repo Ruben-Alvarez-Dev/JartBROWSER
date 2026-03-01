@@ -1,0 +1,67 @@
+# Git Ignore
+
+# Dependencies
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Build artifacts
+dist-electron/
+dist/
+out/
+*.dmg
+*.exe
+*.AppImage
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Backup
+backups/
+*.backup
+
+# Keys and secrets
+*.pem
+*.key
+*.crt
+secrets/
