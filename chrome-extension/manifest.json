@@ -1,0 +1,70 @@
+{
+  "manifest_version": 3,
+  "name": "JartBROWSER",
+  "version": "1.0.0",
+  "description": "Your browser, powered by AI",
+  "author": "JartBROWSER Team",
+  "homepage_url": "https://jartbrowser.io",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "scripting",
+    "storage",
+    "alarms",
+    "offscreen",
+    "tabs",
+    "sidePanel",
+    "commands",
+    "webNavigation",
+    "activeTab",
+    "debugger",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:*",
+    "http://127.0.0.1:*"
+  ],
+  "optional_permissions": [
+    "tabCapture"
+  ],
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Cmd+Shift+A",
+        "mac": "Cmd+Shift+A",
+        "windows": "Ctrl+Shift+A",
+        "chromeos": "Ctrl+Shift+A"
+      },
+      "description": "Toggle AI Sidebar"
+    },
+    "start-agent": {
+      "suggested_key": {
+        "default": "Cmd+Shift+S",
+        "mac": "Cmd+Shift+S",
+        "windows": "Ctrl+Shift+S",
+        "chromeos": "Ctrl+Shift+S"
+      },
+      "description": "Start AI Agent"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
+  },
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  }
+}
