@@ -1,0 +1,46 @@
+{
+  "name": "jartbrowser-monorepo",
+  "version": "1.0.0",
+  "description": "JartBROWSER - Enterprise-grade agentic browser automation platform",
+  "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "JartBROWSER Team",
+    "email": "hello@jartbrowser.io"
+  },
+  "workspaces": [
+    "electron-app",
+    "renderer",
+    "backend",
+    "chrome-extension"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @jartbrowser/electron-app dev\" \"pnpm --filter @jartbrowser/backend dev\" \"pnpm --filter @jartbrowser/renderer dev\"",
+    "dev:app": "pnpm --filter @jartbrowser/electron-app dev",
+    "dev:api": "pnpm --filter @jartbrowser/backend dev",
+    "dev:extension": "pnpm --filter @jartbrowser/chrome-extension dev",
+    "dev:renderer": "pnpm --filter @jartbrowser/renderer dev",
+    "build": "pnpm -r --filter ./packages/* build",
+    "build:app": "pnpm --filter @jartbrowser/electron-app build",
+    "build:api": "pnpm --filter @jartbrowser/backend build",
+    "build:extension": "pnpm --filter @jartbrowser/chrome-extension build",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf node_modules dist build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

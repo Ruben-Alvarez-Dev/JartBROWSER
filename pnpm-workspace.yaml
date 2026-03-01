@@ -1,0 +1,6 @@
+packages:
+  - 'electron-app/*'
+  - 'renderer/*'
+  - 'backend/*'
+  - 'chrome-extension/*'
+  - '!**/test/**'
