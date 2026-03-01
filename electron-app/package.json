@@ -1,23 +1,67 @@
 {
   "name": "@jartbrowser/electron-app",
   "version": "1.0.0",
-  "description": "JartBROWSER Electron main process",
+  "description": "JartBROWSER Electron Desktop Application",
   "main": "dist-electron/main.js",
+  "author": "JartBROWSER Team",
+  "license": "MIT",
   "scripts": {
     "dev": "vite --config vite.config.ts",
-    "build": "vite build && electron-builder",
+    "build": "vite build",
+    "build:win": "vite build && electron-builder --win",
+    "build:mac": "vite build && electron-builder --mac",
+    "build:linux": "vite build && electron-builder --linux",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "electron": "^28.0.0",
-    "dockerode": "^4.0.0",
-    "safe-storage": "^4.2.0",
+ {
+    "docker  "dependencies":ode": "^4.0.0",
     "electron-updater": "^6.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0",
     "vite": "^5.0.0",
-    "vite-plugin-electron": "^0.28.0",
-    "electron-builder": "^24.9.0"
+    "vite-plugin-electron": "^0.28.0"
+  },
+  "build": {
+    "appId": "io.jartbrowser.app",
+    "productName": "JartBROWSER",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "build/icon.png",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
