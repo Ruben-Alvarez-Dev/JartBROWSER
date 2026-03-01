@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # OpenWebUI Backend
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: jartbrowser-openwebui
+    ports:
+      - "0.0.0.0:3000:8080"
+    volumes:
+      - openwebui-data:/app/backend/data
+      - ./prompts:/app/prompts:ro
+      - ./skills:/app/skills:ro
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-jartbrowser-secret-key-change-me}
+      - ENABLE_WEBSOCKET_SUPPORT=true
+      - ENABLE_OPENAI_API=true
+      - ENABLE_ANTHROPIC_API=true
+      - ENABLE_GOOGLE_API=true
+      - ENABLE_OLLAMA_API=false
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://localhost:11434}
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - jartbrowser-net
+
+  # Redis - Caching and Sessions
+  redis:
+    image: redis:7-alpine
+    container_name: jartbrowser-redis
+    ports:
+      - "0.0.0.0:6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    networks:
+      - jartbrowser-net
+
+volumes:
+  openwebui-data:
+  redis-data:
+
+networks:
+  jartbrowser-net:
+    driver: bridge

@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # OpenWebUI Backend
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: jartbrowser-openwebui
+    ports:
+      - "0.0.0.0:3000:8080"
+    volumes:
+      - openwebui-data:/app/backend/data
+      - ./prompts:/app/prompts:ro
+      - ./skills:/app/skills:ro
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-jartbrowser-secret-key-change-me}
+      - ENABLE_WEBSOCKET_SUPPORT=true
+      - ENABLE_OPENAI_API=true
+      - ENABLE_ANTHROPIC_API=true
+      - ENABLE_GOOGLE_API=true
+      - ENABLE_OLLAMA_API=true
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - jartbrowser-net
+
+  # Ollama - Local LLM Server (runs on host machine)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: jartbrowser-ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_LOAD_TIMEOUT=5m
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - jartbrowser-host
+
+  # Redis - Caching and Sessions
+  redis:
+    image: redis:7-alpine
+    container_name: jartbrowser-redis
+    ports:
+      - "0.0.0.0:6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    networks:
+      - jartbrowser-net
+
+volumes:
+  openwebui-data:
+  ollama-data:
+  redis-data:
+
+networks:
+  jartbrowser-net:
+    driver: bridge
+  jartbrowser-host:
+    driver: host
