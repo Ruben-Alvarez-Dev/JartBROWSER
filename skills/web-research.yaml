@@ -1,0 +1,65 @@
+name: Web Research
+description: Research information across multiple web pages
+version: 1.0.0
+author: JartBROWSER Team
+
+tools:
+  - name: search_web
+    description: Search web for information
+    input_schema:
+      type: object
+      properties:
+        query:
+          type: string
+        num_results:
+          type: integer
+          default: 10
+  
+  - name: extract_search_results
+    description: Extract search results from search pages
+    input_schema:
+      type: object
+  
+  - name: visit_pages
+    description: Visit multiple pages in parallel
+    input_schema:
+      type: object
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+          max_items: 5
+  
+  - name: compile_findings
+    description: Compile research findings from multiple sources
+    input_schema:
+      type: object
+
+prompts:
+  main: |
+    Research information across web sources:
+    
+    1. Search for the query using multiple search engines
+    2. Extract relevant search results
+    3. Visit top pages in parallel
+    4. Extract key information from each page
+    5. Compile and summarize findings
+    6. Cite sources for each finding
+    
+    Return structured research report with citations.
+
+optimizations:
+  - Parallel page visits
+  - Cache search results
+  - Deduplicate information across sources
+  - Stop searching when confidence threshold reached
+
+success_criteria:
+  - At least 3 unique sources visited
+  - All findings properly cited
+  - Research is comprehensive and accurate
+
+examples:
+  - Research "latest AI developments" → Visit OpenAI blog, Anthropic blog, Google AI blog
+  - Compare product prices → Search Amazon, BestBuy, Walmart, compile comparison table

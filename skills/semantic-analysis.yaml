@@ -1,0 +1,64 @@
+name: Semantic Page Analysis
+description: Extract semantic information from web pages
+version: 1.0.0
+author: JartBROWSER Team
+
+tools:
+  - name: analyze_dom_structure
+    description: Analyze page DOM structure and extract semantic information
+    input_schema:
+      type: object
+      properties:
+        include_coordinates:
+          type: boolean
+          default: false
+  
+  - name: extract_readable_text
+    description: Extract readable text content from page
+    input_schema:
+      type: object
+      properties:
+        min_length:
+          type: integer
+          default: 50
+  
+  - name: identify_interactive_elements
+    description: Identify all interactive elements on page
+    input_schema:
+      type: object
+      properties:
+        filter_clickable:
+          type: boolean
+          default: true
+  
+  - name: classify_content_type
+    description: Classify page content type (product, blog, form, etc.)
+    input_schema:
+      type: object
+
+prompts:
+  main: |
+    Analyze the web page semantically:
+    
+    1. Identify main sections (header, nav, main, footer, aside)
+    2. Extract content hierarchy (h1, h2, h3)
+    3. Classify elements by role (navigation, search, content, forms)
+    4. Extract key information (titles, descriptions, metadata)
+    5. Identify potential actions
+    
+    Return structured JSON with page type and key elements.
+
+optimizations:
+  - Skip non-semantic elements (div, span without aria-labels)
+  - Use accessibility tree for structure
+  - Limit to top 100 interactive elements
+  - Cache DOM state for repeated queries
+
+success_criteria:
+  - Page type identified with 95% confidence
+  - All interactive elements cataloged
+  - Structure matches human understanding
+
+examples:
+  - Amazon product page → page_type: "product_page", potential_actions: ["add_to_cart", "buy_now", "add_to_wishlist"]
+  - LinkedIn profile → page_type: "profile", interactive_elements: ["connect_button", "message_button"]
